@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinPackingWPF.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,58 +7,57 @@ using System.Threading.Tasks;
 
 namespace BinPackingWPF.Algorithm
 {
-    public class DNA<T>
+    public class DNA
     {
-        public T[] Genes { get; private set; }
+        public Fleet Fleet { get; private set; }
+        public IList<Package> Packages { get; private set; }
         public float Fitness { get; private set; }
 
         private Random random;
-        private Func<T> getRandomGene;
-        private Func<int, float> fitnessFunction;
+        private Func<IList<Package>, Fleet> getRandomFleet;
+        private Func<Fleet, float> fitnessFunction;
 
-        public DNA(int size, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true)
+        public DNA(IList<Package> packages, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, float> fitnessFunction, Fleet fleet = null, bool shouldInitGenes = true)
         {
-            Genes = new T[size];
+            Fleet = fleet;
+            Packages = packages;
             this.random = random;
-            this.getRandomGene = getRandomGene;
+            this.getRandomFleet = getRandomFleet;
             this.fitnessFunction = fitnessFunction;
 
             if (shouldInitGenes)
             {
-                for (int i = 0; i < Genes.Length; i++)
-                {
-                    Genes[i] = getRandomGene();
-                }
+                Fleet = getRandomFleet(Packages);
             }
         }
 
-        public float CalculateFitness(int index)
+        public float CalculateFitness(Fleet fleet)
         {
-            Fitness = fitnessFunction(index);
+            Fitness = fitnessFunction(fleet);
             return Fitness;
         }
 
-        public DNA<T> Crossover(DNA<T> otherParent)
+        public DNA Crossover(DNA otherParent)
         {
-            DNA<T> child = new DNA<T>(Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+            DNA child = new DNA(Packages, random, getRandomFleet, fitnessFunction, Fleet, shouldInitGenes: false);
 
-            for (int i = 0; i < Genes.Length; i++)
-            {
-                child.Genes[i] = random.NextDouble() < 0.5 ? Genes[i] : otherParent.Genes[i];
-            }
+            //for (int i = 0; i < Fleets.Length; i++)
+            //{
+            //    child.Fleets[i] = random.NextDouble() < 0.5 ? Fleets[i] : otherParent.Fleets[i];
+            //}
 
             return child;
         }
 
         public void Mutate(float mutationRate)
         {
-            for (int i = 0; i < Genes.Length; i++)
-            {
-                if (random.NextDouble() < mutationRate)
-                {
-                    Genes[i] = getRandomGene();
-                }
-            }
+            //for (int i = 0; i < Fleets.Length; i++)
+            //{
+            //    if (random.NextDouble() < mutationRate)
+            //    {
+            //        Fleets[i] = getRandomFleet(Packages);
+            //    }
+            //}
         }
     }
 }

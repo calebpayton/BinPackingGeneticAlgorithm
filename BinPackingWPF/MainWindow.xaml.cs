@@ -1,4 +1,5 @@
 ﻿using BinPackingWPF.Generator;
+using BinPackingWPF.Model;
 using BinPackingWPF.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -65,14 +66,19 @@ namespace BinPackingWPF
         {
             if (!String.IsNullOrWhiteSpace(volBinTxtBox.Text) && !String.IsNullOrWhiteSpace(numPkgsTxtBox.Text))
             {
-                var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume);
-
-                var fleet = _fleetGenerator.Generate(packages, viewModel.BinVolume);
+                MainFunction();
             }
             else
             {
                 MessageBox.Show("Ensure all feilds are entered.");
             }
+        }
+
+        private void MainFunction()
+        {
+            var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume);
+            var ag = new AlgorithmGenerator(packages, viewModel.BinVolume);
+            ag.Generate();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinPackingWPF.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,41 +7,39 @@ using System.Threading.Tasks;
 
 namespace BinPackingWPF.Algorithm
 {
-    public class GeneticAlgorithm<T>
+    public class GeneticAlgorithm
     {
-        public List<DNA<T>> Population { get; private set; }
+        public List<DNA> Population { get; private set; }
+        public IList<Package> Packages { get; private set; }
         public int Generation { get; private set; }
         public float BestFitness { get; private set; }
-        public T[] BestGenes { get; private set; }
+        public Fleet BestFleet { get; private set; }
 
-        public int Elitism;
         public float MutationRate;
 
-        private List<DNA<T>> newPopulation;
+        private List<DNA> newPopulation;
         private Random random;
         private float fitnessSum;
-        private int dnaSize;
-        private Func<T> getRandomGene;
-        private Func<int, float> fitnessFunction;
+        private Func<IList<Package>, Fleet> getRandomFleet;
+        private Func<Fleet, float> fitnessFunction;
 
-        public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction,
-            int elitism, float mutationRate = 0.01f)
+        public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, float> fitnessFunction, float mutationRate = 0.01f)
         {
+            Packages = packages;
             Generation = 1;
-            Elitism = elitism;
             MutationRate = mutationRate;
-            Population = new List<DNA<T>>(populationSize);
-            newPopulation = new List<DNA<T>>(populationSize);
+            Population = new List<DNA>(populationSize);
+            newPopulation = new List<DNA>(populationSize);
             this.random = random;
-            this.dnaSize = dnaSize;
-            this.getRandomGene = getRandomGene;
+            this.getRandomFleet = getRandomFleet;
             this.fitnessFunction = fitnessFunction;
 
-            BestGenes = new T[dnaSize];
+            BestFleet = new Fleet();
 
             for (int i = 0; i < populationSize; i++)
             {
-                Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+                var fleet = new Fleet();
+                Population.Add(new DNA(Packages, random, getRandomFleet, fitnessFunction, fleet, shouldInitGenes: true));
             }
         }
 
@@ -62,16 +61,16 @@ namespace BinPackingWPF.Algorithm
 
             for (int i = 0; i < Population.Count; i++)
             {
-                if (i < Elitism && i < Population.Count)
+                if (i < Population.Count)
                 {
                     newPopulation.Add(Population[i]);
                 }
                 else if (i < Population.Count || crossoverNewDNA)
                 {
-                    DNA<T> parent1 = ChooseParent();
-                    DNA<T> parent2 = ChooseParent();
+                    DNA parent1 = ChooseParent();
+                    DNA parent2 = ChooseParent();
 
-                    DNA<T> child = parent1.Crossover(parent2);
+                    DNA child = parent1.Crossover(parent2);
 
                     child.Mutate(MutationRate);
 
@@ -79,18 +78,18 @@ namespace BinPackingWPF.Algorithm
                 }
                 else
                 {
-                    newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+                    newPopulation.Add(new DNA(Packages, random, getRandomFleet, fitnessFunction, shouldInitGenes: true));
                 }
             }
 
-            List<DNA<T>> tmpList = Population;
+            List<DNA> tmpList = Population;
             Population = newPopulation;
             newPopulation = tmpList;
 
             Generation++;
         }
 
-        public int CompareDNA(DNA<T> a, DNA<T> b)
+        public int CompareDNA(DNA a, DNA b)
         {
             if (a.Fitness > b.Fitness)
             {
@@ -109,11 +108,11 @@ namespace BinPackingWPF.Algorithm
         public void CalculateFitness()
         {
             fitnessSum = 0;
-            DNA<T> best = Population[0];
+            DNA best = Population[0];
 
             for (int i = 0; i < Population.Count; i++)
             {
-                fitnessSum += Population[i].CalculateFitness(i);
+                fitnessSum += Population[i].CalculateFitness(Population[i].Fleet);
 
                 if (Population[i].Fitness > best.Fitness)
                 {
@@ -122,10 +121,10 @@ namespace BinPackingWPF.Algorithm
             }
 
             BestFitness = best.Fitness;
-            best.Genes.CopyTo(BestGenes, 0);
+            BestFleet = best.Fleet;
         }
 
-        private DNA<T> ChooseParent()
+        private DNA ChooseParent()
         {
             double randomNumber = random.NextDouble() * fitnessSum;
 
