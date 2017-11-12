@@ -1,0 +1,15 @@
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\bin\Debug\BinPackingWPF.exe.config
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\bin\Debug\BinPackingWPF.exe
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\bin\Debug\BinPackingWPF.pdb
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.csprojResolveAssemblyReference.cache
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\MainWindow.g.cs
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\App.g.cs
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF_MarkupCompile.cache
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF_MarkupCompile.lref
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\MainWindow.baml
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.g.resources
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.Properties.Resources.resources
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.csproj.GenerateResource.Cache
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.csproj.CoreCompileInputs.cache
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.exe
+C:\Users\Caleb\source\repos\BinPackingWPF\BinPackingWPF\obj\Debug\BinPackingWPF.pdb
