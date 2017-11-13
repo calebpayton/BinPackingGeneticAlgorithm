@@ -6,6 +6,7 @@ namespace BinPackingWPF.Model
     {
         public double Volume { get; set; }
         public IList<Package> Packages { get; set; }
+        public double Fitness { get; set; }
 
         public Bin(double volume)
         {

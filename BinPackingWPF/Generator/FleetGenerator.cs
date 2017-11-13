@@ -21,6 +21,7 @@ namespace BinPackingWPF.Generator
                 if (bin.Volume - occupiedVolume >= packages[i].Volume)
                 {
                     bin.Packages.Add(packages[i]);
+                    bin.Fitness = bin.Packages.Sum(p => p.Volume) / bin.Volume;
                 }
                 else
                 {
@@ -29,7 +30,25 @@ namespace BinPackingWPF.Generator
                 }
             }
 
+            fleet.Bins.Sort(CompareFitness);
+
             return fleet;
+        }
+
+        public int CompareFitness(Bin a, Bin b)
+        {
+            if (a.Fitness > b.Fitness)
+            {
+                return -1;
+            }
+            else if (a.Fitness < b.Fitness)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

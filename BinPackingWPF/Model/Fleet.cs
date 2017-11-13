@@ -4,7 +4,7 @@ namespace BinPackingWPF.Model
 {
     public class Fleet
     {
-        public IList<Bin> Bins { get; set; }
+        public List<Bin> Bins { get; set; }
 
         public Fleet()
         {
