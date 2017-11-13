@@ -11,13 +11,13 @@ namespace BinPackingWPF.Algorithm
     {
         public Fleet Fleet { get; private set; }
         public IList<Package> Packages { get; private set; }
-        public float Fitness { get; private set; }
+        public double Fitness { get; private set; }
 
         private Random random;
         private Func<IList<Package>, Fleet> getRandomFleet;
-        private Func<Fleet, float> fitnessFunction;
+        private Func<Fleet, double> fitnessFunction;
 
-        public DNA(IList<Package> packages, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, float> fitnessFunction, Fleet fleet = null, bool shouldInitGenes = true)
+        public DNA(IList<Package> packages, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, double> fitnessFunction, Fleet fleet = null, bool shouldInitGenes = true)
         {
             Fleet = fleet;
             Packages = packages;
@@ -31,7 +31,7 @@ namespace BinPackingWPF.Algorithm
             }
         }
 
-        public float CalculateFitness(Fleet fleet)
+        public double CalculateFitness(Fleet fleet)
         {
             Fitness = fitnessFunction(fleet);
             return Fitness;

@@ -15,7 +15,8 @@ namespace BinPackingWPF.Generator
             {
                 packages.Add(new Package
                 {
-                    Volume = random.NextDouble() * maxVolume
+                    Volume = random.NextDouble() * maxVolume * .50,
+                    Id = i + 1
                 });
             }
 

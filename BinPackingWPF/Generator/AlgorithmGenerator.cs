@@ -13,7 +13,7 @@ namespace BinPackingWPF.Generator
         private GeneticAlgorithm ga;
         private readonly FleetGenerator _fleetGenerator;
         private readonly double _binVolume;
-        int populationSize = 10;
+        int populationSize = 100;
 
         public AlgorithmGenerator(IList<Package> packages, double binVolume)
         {
@@ -47,19 +47,9 @@ namespace BinPackingWPF.Generator
             return _fleetGenerator.Generate(newPackageAssortment, _binVolume);
         }
 
-        private float FitnessFunction(Fleet fleet)
+        private double FitnessFunction(Fleet fleet)
         {
-            float score = 0;
-
-            foreach (var bin in fleet.Bins)
-            {
-                if (bin.Packages.Sum(p => p.Volume) / bin.Volume == .9) //if packages in bin occupy 90% of bin volume
-                {
-                    score += 1;
-                }
-            }
-
-            return score /= fleet.Bins.Count;
+            return fleet.Bins.SelectMany(b => b.Packages).Sum(p => p.Volume) / fleet.Bins.Sum(b => b.Volume);
         }
 
         public IList<Package> Shuffle(IList<Package> list)

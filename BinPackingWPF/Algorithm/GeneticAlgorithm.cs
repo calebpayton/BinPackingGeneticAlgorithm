@@ -12,18 +12,18 @@ namespace BinPackingWPF.Algorithm
         public List<DNA> Population { get; private set; }
         public IList<Package> Packages { get; private set; }
         public int Generation { get; private set; }
-        public float BestFitness { get; private set; }
+        public double BestFitness { get; private set; }
         public Fleet BestFleet { get; private set; }
 
         public float MutationRate;
 
         private List<DNA> newPopulation;
         private Random random;
-        private float fitnessSum;
+        private double fitnessSum;
         private Func<IList<Package>, Fleet> getRandomFleet;
-        private Func<Fleet, float> fitnessFunction;
+        private Func<Fleet, double> fitnessFunction;
 
-        public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, float> fitnessFunction, float mutationRate = 0.01f)
+        public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, double> fitnessFunction, float mutationRate = 0.01f)
         {
             Packages = packages;
             Generation = 1;
