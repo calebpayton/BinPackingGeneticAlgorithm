@@ -62,9 +62,21 @@ namespace BinPackingWPF
             }
         }
 
+        private void numGensTxtBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                viewModel.NumGenerations = Convert.ToInt32(numGensTxtBox.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Input string is not an integer.");
+            }
+        }
+
         private void calcButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(volBinTxtBox.Text) && !String.IsNullOrWhiteSpace(numPkgsTxtBox.Text))
+            if (!String.IsNullOrWhiteSpace(volBinTxtBox.Text) && !String.IsNullOrWhiteSpace(numPkgsTxtBox.Text) && !String.IsNullOrWhiteSpace(numGensTxtBlock.Text))
             {
                 MainFunction();
             }
@@ -77,7 +89,7 @@ namespace BinPackingWPF
         private void MainFunction()
         {
             var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume);
-            var ag = new AlgorithmGenerator(packages, viewModel.BinVolume);
+            var ag = new AlgorithmGenerator(packages, viewModel.BinVolume, viewModel.NumGenerations);
             ag.Generate();
         }
     }

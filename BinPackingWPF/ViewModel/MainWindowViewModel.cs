@@ -37,5 +37,19 @@ namespace BinPackingWPF.ViewModel
                 }
             }
         }
+
+        private int _numGenerations;
+        public int NumGenerations
+        {
+            get { return _numGenerations; }
+            set
+            {
+                if (_numGenerations != value)
+                {
+                    _numGenerations = value;
+                    NotifyPropertyChanged("NumGenerations");
+                }
+            }
+        }
     }
 }

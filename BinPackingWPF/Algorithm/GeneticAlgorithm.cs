@@ -34,6 +34,8 @@ namespace BinPackingWPF.Algorithm
             }
 
             Population.Sort(CompareDNA);
+            BestFitness = Population.First().Fitness;
+            BestFleet = Population.First().Fleet;
         }
 
         public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
@@ -45,8 +47,7 @@ namespace BinPackingWPF.Algorithm
                 if (crossoverNewDNA)
                 {
                     var parent = Population.First();
-                    var parent2 = ChooseParent();
-                    var child = parent.Crossover(parent2);
+                    var child = parent.Crossover();
 
                     child.Mutate(MutationRate);
 
@@ -57,9 +58,19 @@ namespace BinPackingWPF.Algorithm
                     newPopulation.Add(new DNA(Packages, _random, _binVolume, shouldInitGenes: true));
                 }
             }
-            
+
+            newPopulation.Sort(CompareDNA);
+            if (Population.First().Fitness > newPopulation.First().Fitness)
+            {
+                newPopulation.RemoveAt(newPopulation.Count - 1);
+                newPopulation.Add(Population.First());
+            }
+
             Population = newPopulation;
             Population.Sort(CompareDNA);
+
+            BestFitness = Population.First().Fitness;
+            BestFleet = Population.First().Fleet;
 
             Generation++;
         }

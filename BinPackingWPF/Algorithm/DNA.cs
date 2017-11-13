@@ -14,6 +14,8 @@ namespace BinPackingWPF.Algorithm
         public IList<Package> Packages { get; private set; }
         public double Fitness { get; private set; }
 
+        private double binAcceptance = .95;
+
         private Random _random;
         private readonly double _binVolume;
         private readonly FleetGenerator _fleetGenerator;
@@ -63,16 +65,16 @@ namespace BinPackingWPF.Algorithm
             return list;
         }
 
-        public DNA Crossover(DNA otherParent)
+        public DNA Crossover()
         {
             List<Bin> optimalBins = null;
-            if (Fleet.Bins.Where(b => b.Fitness > .99).Any())
+            if (Fleet.Bins.Where(b => b.Fitness > binAcceptance).Any())
                 optimalBins = Fleet.Bins.Where(b => b.Fitness > .99).ToList();
             else
                 optimalBins = new List<Bin> { Fleet.Bins.First() };
 
             var optimalPackages = optimalBins.SelectMany(b => b.Packages).ToList();
-            var otherPackages = otherParent.Fleet.Bins.SelectMany(b => b.Packages).Where(p => !optimalPackages.Contains(p)).ToList();
+            var otherPackages = Packages.Where(p => !optimalPackages.Contains(p)).ToList();
 
             var randomizedPackages = Shuffle(otherPackages);
 
