@@ -87,13 +87,11 @@ namespace BinPackingWPF.Algorithm
 
         public void Mutate(float mutationRate)
         {
-            //for (int i = 0; i < Fleets.Length; i++)
-            //{
-            //    if (random.NextDouble() < mutationRate)
-            //    {
-            //        Fleets[i] = getRandomFleet(Packages);
-            //    }
-            //}
+            if (_random.NextDouble() < mutationRate)
+            {
+                Fleet = GetRandomFleet(Packages);
+                Fitness = CalculateFitness();
+            }
         }
     }
 }

@@ -48,7 +48,7 @@ namespace BinPackingWPF.Algorithm
                     var parent2 = ChooseParent();
                     var child = parent.Crossover(parent2);
 
-                    //child.Mutate(MutationRate);
+                    child.Mutate(MutationRate);
 
                     newPopulation.Add(child);
                 }
