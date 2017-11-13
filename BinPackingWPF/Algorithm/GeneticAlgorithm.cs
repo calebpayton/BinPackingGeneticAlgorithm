@@ -14,77 +14,52 @@ namespace BinPackingWPF.Algorithm
         public int Generation { get; private set; }
         public double BestFitness { get; private set; }
         public Fleet BestFleet { get; private set; }
+        public float MutationRate;        
+        private Random _random;
+        private readonly double _binVolume;
 
-        public float MutationRate;
-
-        private List<DNA> newPopulation;
-        private Random random;
-        private double fitnessSum;
-        private Func<IList<Package>, Fleet> getRandomFleet;
-        private Func<Fleet, double> fitnessFunction;
-
-        public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, Func<IList<Package>, Fleet> getRandomFleet, Func<Fleet, double> fitnessFunction, float mutationRate = 0.01f)
+        public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, double binVolume, float mutationRate = 0.01f)
         {
             Packages = packages;
             Generation = 1;
             MutationRate = mutationRate;
             Population = new List<DNA>(populationSize);
-            newPopulation = new List<DNA>(populationSize);
-            this.random = random;
-            this.getRandomFleet = getRandomFleet;
-            this.fitnessFunction = fitnessFunction;
-
-            BestFleet = new Fleet();
+            _random = random;
+            _binVolume = binVolume;
 
             for (int i = 0; i < populationSize; i++)
             {
                 var fleet = new Fleet();
-                Population.Add(new DNA(Packages, random, getRandomFleet, fitnessFunction, fleet, shouldInitGenes: true));
+                Population.Add(new DNA(Packages, _random, _binVolume, shouldInitGenes: true));
             }
+
+            Population.Sort(CompareDNA);
         }
 
         public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
         {
-            int finalCount = Population.Count + numNewDNA;
-
-            if (finalCount <= 0)
-            {
-                return;
-            }
-
-            if (Population.Count > 0)
-            {
-                CalculateFitness();
-                Population.Sort(CompareDNA);
-            }
-            newPopulation.Clear();
+            var newPopulation = new List<DNA>(Population.Count);
 
             for (int i = 0; i < Population.Count; i++)
             {
-                if (i < Population.Count)
+                if (crossoverNewDNA)
                 {
-                    newPopulation.Add(Population[i]);
-                }
-                else if (i < Population.Count || crossoverNewDNA)
-                {
-                    DNA parent1 = ChooseParent();
-                    DNA parent2 = ChooseParent();
+                    var parent = Population.First();
+                    var parent2 = ChooseParent();
+                    var child = parent.Crossover(parent2);
 
-                    DNA child = parent1.Crossover(parent2);
-
-                    child.Mutate(MutationRate);
+                    //child.Mutate(MutationRate);
 
                     newPopulation.Add(child);
                 }
                 else
                 {
-                    newPopulation.Add(new DNA(Packages, random, getRandomFleet, fitnessFunction, shouldInitGenes: true));
+                    newPopulation.Add(new DNA(Packages, _random, _binVolume, shouldInitGenes: true));
                 }
             }
-
-            List<DNA> tmpList = Population;
+            
             Population = newPopulation;
-            newPopulation = tmpList;
+            Population.Sort(CompareDNA);
 
             Generation++;
         }
@@ -105,40 +80,11 @@ namespace BinPackingWPF.Algorithm
             }
         }
 
-        public void CalculateFitness()
-        {
-            fitnessSum = 0;
-            DNA best = Population[0];
-
-            for (int i = 0; i < Population.Count; i++)
-            {
-                fitnessSum += Population[i].CalculateFitness(Population[i].Fleet);
-
-                if (Population[i].Fitness > best.Fitness)
-                {
-                    best = Population[i];
-                }
-            }
-
-            BestFitness = best.Fitness;
-            BestFleet = best.Fleet;
-        }
-
         private DNA ChooseParent()
         {
-            double randomNumber = random.NextDouble() * fitnessSum;
+            double randomNumber = _random.NextDouble() * (Population.Count - 1);
 
-            for (int i = 0; i < Population.Count; i++)
-            {
-                if (randomNumber < Population[i].Fitness)
-                {
-                    return Population[i];
-                }
-
-                randomNumber -= Population[i].Fitness;
-            }
-
-            return null;
+            return Population[Convert.ToInt32(randomNumber)];
         }
     }
 }

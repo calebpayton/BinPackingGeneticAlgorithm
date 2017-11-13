@@ -23,48 +23,17 @@ namespace BinPackingWPF.Generator
             _binVolume = binVolume;
         }
 
-        public void Generate()
+        public Fleet Generate()
         {
-            ga = new GeneticAlgorithm(Packages, populationSize, random, GetRandomFleet, FitnessFunction, 1);
-            ga.NewGeneration(crossoverNewDNA: true);
-        }
+            ga = new GeneticAlgorithm(Packages, populationSize, random, _binVolume);
 
-        public IList<Fleet> GetStartingGeneration()
-        {
-            var fleets = new List<Fleet>();
-            for (int i = 0; i < 11; i++)
+            do
             {
-                fleets.Add(_fleetGenerator.Generate(Packages, _binVolume));
+                ga.NewGeneration(crossoverNewDNA: true);
             }
+            while (ga.Generation < 10);
 
-            return fleets;
-        }
-
-        public Fleet GetRandomFleet(IList<Package> list)
-        {
-            var newPackageAssortment = Shuffle(list);
-
-            return _fleetGenerator.Generate(newPackageAssortment, _binVolume);
-        }
-
-        private double FitnessFunction(Fleet fleet)
-        {
-            return fleet.Bins.SelectMany(b => b.Packages).Sum(p => p.Volume) / fleet.Bins.Sum(b => b.Volume);
-        }
-
-        public IList<Package> Shuffle(IList<Package> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                var k = random.Next(n + 1);
-                var value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-
-            return list;
+            return ga.BestFleet;
         }
     }
 }
