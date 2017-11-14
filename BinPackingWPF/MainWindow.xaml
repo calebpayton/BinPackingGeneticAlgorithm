@@ -34,8 +34,8 @@
             <Button x:Name="calcButton" Click="calcButton_Click" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Content="Calculate" />
         </Grid>
         <Grid Grid.Row="1">
-            <chartingToolkit:Chart x:Name="columnChart"  Grid.Column="1" Grid.Row="0" Title="Fitness By Generation">
-                <chartingToolkit:ColumnSeries  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" DataContext="{Binding}" IsSelectionEnabled="True"/>
+            <chartingToolkit:Chart x:Name="graph"  Grid.Column="1" Grid.Row="0" Title="Fitness By Generation">
+                <chartingToolkit:LineSeries  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" DataContext="{Binding}" IsSelectionEnabled="True"/>
             </chartingToolkit:Chart>
         </Grid>
     </Grid>

@@ -36,7 +36,7 @@ namespace BinPackingWPF
             viewModel = new MainWindowViewModel();
             this.DataContext = viewModel;
 
-            columnChart.DataContext = new List<KeyValuePair<string, double>>();
+            graph.DataContext = new List<KeyValuePair<string, double>>();
 
             _packagesGenerator = new PackagesGenerator();
             _fleetGenerator = new FleetGenerator();
@@ -96,12 +96,21 @@ namespace BinPackingWPF
             task.Wait();
 
             var valueList = new List<KeyValuePair<string, double>>();
+            var addedItems = new List<double>();
             for (int i = 0; i < FitnessData.Count; i++)
             {
-                valueList.Add(new KeyValuePair<string, double>(i.ToString(), FitnessData[i] * 100));
+                if (!addedItems.Contains(FitnessData[i]))
+                {
+                    valueList.Add(new KeyValuePair<string, double>((i + 1).ToString(), FitnessData[i] * 100));
+                    addedItems.Add(FitnessData[i]);
+                }
+                else if (i == FitnessData.Count - 1)
+                {
+                    valueList.Add(new KeyValuePair<string, double>((i + 1).ToString(), FitnessData[i] * 100));
+                }
             }
 
-            columnChart.DataContext = valueList;
+            graph.DataContext = valueList;
         }
 
         private void PerformAlgorithm()
