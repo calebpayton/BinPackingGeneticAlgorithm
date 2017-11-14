@@ -14,7 +14,7 @@ namespace BinPackingWPF.Algorithm
         public IList<Package> Packages { get; private set; }
         public double Fitness { get; private set; }
 
-        private double binAcceptance = .95;
+        private double binAcceptance = .99;
 
         private Random _random;
         private readonly double _binVolume;
@@ -69,7 +69,7 @@ namespace BinPackingWPF.Algorithm
         {
             List<Bin> optimalBins = null;
             if (Fleet.Bins.Where(b => b.Fitness > binAcceptance).Any())
-                optimalBins = Fleet.Bins.Where(b => b.Fitness > .99).ToList();
+                optimalBins = Fleet.Bins.Where(b => b.Fitness > binAcceptance).ToList();
             else
                 optimalBins = new List<Bin> { Fleet.Bins.First() };
 
