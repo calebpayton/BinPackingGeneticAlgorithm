@@ -1,4 +1,5 @@
-﻿using BinPackingWPF.Generator;
+﻿using BinPackingWPF.Algorithm;
+using BinPackingWPF.Generator;
 using BinPackingWPF.Model;
 using BinPackingWPF.ViewModel;
 using System;
@@ -26,6 +27,7 @@ namespace BinPackingWPF
         public MainWindowViewModel viewModel { get; set; }
         private readonly PackagesGenerator _packagesGenerator;
         private readonly FleetGenerator _fleetGenerator;
+        public IList<double> FitnessData { get; set; }
 
         public MainWindow()
         {
@@ -33,6 +35,8 @@ namespace BinPackingWPF
 
             viewModel = new MainWindowViewModel();
             this.DataContext = viewModel;
+
+            columnChart.DataContext = new List<KeyValuePair<string, double>>();
 
             _packagesGenerator = new PackagesGenerator();
             _fleetGenerator = new FleetGenerator();
@@ -88,9 +92,23 @@ namespace BinPackingWPF
 
         private void MainFunction()
         {
+            var task = Task.Factory.StartNew(() => PerformAlgorithm());
+            task.Wait();
+
+            var valueList = new List<KeyValuePair<string, double>>();
+            for (int i = 0; i < FitnessData.Count; i++)
+            {
+                valueList.Add(new KeyValuePair<string, double>(i.ToString(), FitnessData[i] * 100));
+            }
+
+            columnChart.DataContext = valueList;
+        }
+
+        private void PerformAlgorithm()
+        {
             var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume);
             var ag = new AlgorithmGenerator(packages, viewModel.BinVolume, viewModel.NumGenerations);
-            ag.Generate();
+            FitnessData = ag.Generate();
         }
     }
 }

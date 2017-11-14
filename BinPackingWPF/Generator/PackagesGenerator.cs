@@ -6,7 +6,9 @@ namespace BinPackingWPF.Generator
 {
     public class PackagesGenerator
     {
-        public IList<Package> GeneratePackages(int numPackages, double maxVolume)
+        double packageVolumeFactor = .25;
+
+        public IList<Package> GeneratePackages(int numPackages, double binVolume)
         {
             var packages = new List<Package>();
             
@@ -15,7 +17,7 @@ namespace BinPackingWPF.Generator
             {
                 packages.Add(new Package
                 {
-                    Volume = random.NextDouble() * maxVolume * .50,
+                    Volume = random.NextDouble() * binVolume * packageVolumeFactor,
                     Id = i + 1
                 });
             }

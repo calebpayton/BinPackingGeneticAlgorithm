@@ -13,7 +13,6 @@ namespace BinPackingWPF.Generator
         private IList<Package> Packages;
         private Random random;
         private GeneticAlgorithm ga;
-        private readonly FleetGenerator _fleetGenerator;
         private readonly double _binVolume;
         private readonly int _numGenerations;
         int populationSize = 100;
@@ -22,14 +21,16 @@ namespace BinPackingWPF.Generator
         {
             Packages = packages;
             random = new Random();
-            _fleetGenerator = new FleetGenerator();
             _binVolume = binVolume;
             _numGenerations = numGenerations;
         }
 
-        public Fleet Generate()
+        public IList<double> Generate()
         {
             ga = new GeneticAlgorithm(Packages, populationSize, random, _binVolume);
+
+            if (_numGenerations == 1)
+                return ga.FitnessOverTime;
 
             do
             {
@@ -38,7 +39,7 @@ namespace BinPackingWPF.Generator
             }
             while (ga.Generation < _numGenerations);
 
-            return ga.BestFleet;
+            return ga.FitnessOverTime;
         }
     }
 }

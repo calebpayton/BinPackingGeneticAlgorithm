@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BinPackingWPF"
+        xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
+        xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         mc:Ignorable="d"
         Title="Bin Packing" Height="500" Width="525">
     <Grid>
@@ -30,6 +32,11 @@
             <TextBlock x:Name="numGensTxtBlock" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" FontWeight="Bold" Text="# of Generations:"/>
             <TextBox x:Name="numGensTxtBox" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Width="80" TextChanged="numGensTxtBox_TextChanged" Text="{Binding Path=NumGenerations, Mode=OneWayToSource}" TextWrapping="Wrap"/>
             <Button x:Name="calcButton" Click="calcButton_Click" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Content="Calculate" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <chartingToolkit:Chart x:Name="columnChart"  Grid.Column="1" Grid.Row="0" Title="Fitness By Generation">
+                <chartingToolkit:ColumnSeries  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" DataContext="{Binding}" IsSelectionEnabled="True"/>
+            </chartingToolkit:Chart>
         </Grid>
     </Grid>
 </Window>

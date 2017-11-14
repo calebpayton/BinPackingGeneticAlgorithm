@@ -11,6 +11,7 @@ namespace BinPackingWPF.Algorithm
     {
         public List<DNA> Population { get; private set; }
         public IList<Package> Packages { get; private set; }
+        public IList<double> FitnessOverTime { get; private set; }
         public int Generation { get; private set; }
         public double BestFitness { get; private set; }
         public Fleet BestFleet { get; private set; }
@@ -20,6 +21,7 @@ namespace BinPackingWPF.Algorithm
 
         public GeneticAlgorithm(IList<Package> packages, int populationSize, Random random, double binVolume, float mutationRate = 0.01f)
         {
+            FitnessOverTime = new List<double>();
             Packages = packages;
             Generation = 1;
             MutationRate = mutationRate;
@@ -36,6 +38,8 @@ namespace BinPackingWPF.Algorithm
             Population.Sort(CompareDNA);
             BestFitness = Population.First().Fitness;
             BestFleet = Population.First().Fleet;
+
+            FitnessOverTime.Add(BestFitness);
         }
 
         public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
@@ -71,6 +75,8 @@ namespace BinPackingWPF.Algorithm
 
             BestFitness = Population.First().Fitness;
             BestFleet = Population.First().Fleet;
+
+            FitnessOverTime.Add(BestFitness);
 
             Generation++;
         }
