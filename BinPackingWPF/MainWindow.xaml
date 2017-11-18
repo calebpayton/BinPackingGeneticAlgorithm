@@ -7,7 +7,7 @@
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
         xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         mc:Ignorable="d"
-        Title="Bin Packing" Height="500" Width="525">
+        Title="Bin Packing" Height="550" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>                
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="volBinTxtBlock" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" FontWeight="Bold" Text="Bin Volume:"/>
             <TextBox x:Name="volBinTxtBox" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Width="80" TextChanged="volBinTxtBox_TextChanged" Text="{Binding Path=BinVolume, Mode=OneWayToSource}" TextWrapping="Wrap"/>
@@ -31,7 +31,8 @@
             <TextBox x:Name="numPkgsTxtBox" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Width="80" TextChanged="numPkgsTxtBox_TextChanged" Text="{Binding Path=NumPackages, Mode=OneWayToSource}" TextWrapping="Wrap"/>
             <TextBlock x:Name="numGensTxtBlock" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" FontWeight="Bold" Text="# of Generations:"/>
             <TextBox x:Name="numGensTxtBox" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Width="80" TextChanged="numGensTxtBox_TextChanged" Text="{Binding Path=NumGenerations, Mode=OneWayToSource}" TextWrapping="Wrap"/>
-            <Button x:Name="calcButton" Click="calcButton_Click" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Content="Calculate" />
+            <Button x:Name="calcButton" Click="calcButton_Click" Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Content="Calculate" />
+            <ProgressBar x:Name="progressBar" Grid.Column="3" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="20" Width="100" Minimum="0"/>
         </Grid>
         <Grid Grid.Row="1">
             <chartingToolkit:Chart x:Name="graph"  Grid.Column="1" Grid.Row="0" Title="Fitness By Generation">

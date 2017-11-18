@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -28,6 +29,8 @@ namespace BinPackingWPF
         private readonly PackagesGenerator _packagesGenerator;
         private readonly FleetGenerator _fleetGenerator;
         public IList<double> FitnessData { get; set; }
+        private Random random;
+        private int populationSize = 100;
 
         public MainWindow()
         {
@@ -40,6 +43,7 @@ namespace BinPackingWPF
 
             _packagesGenerator = new PackagesGenerator();
             _fleetGenerator = new FleetGenerator();
+            random = new Random();
         }
 
         private void numPkgsTxtBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -82,7 +86,7 @@ namespace BinPackingWPF
         {
             if (!String.IsNullOrWhiteSpace(volBinTxtBox.Text) && !String.IsNullOrWhiteSpace(numPkgsTxtBox.Text) && !String.IsNullOrWhiteSpace(numGensTxtBlock.Text))
             {
-                MainFunction();
+                PerformAlgorithm();
             }
             else
             {
@@ -90,11 +94,39 @@ namespace BinPackingWPF
             }
         }
 
-        private void MainFunction()
+        private async void PerformAlgorithm()
         {
-            var task = Task.Factory.StartNew(() => PerformAlgorithm());
-            task.Wait();
+            var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume, random);
+            
+            var ga = new GeneticAlgorithm(packages, populationSize, random, viewModel.BinVolume);
 
+            if (progressBar.Value > 0)
+                progressBar.Value = 0;
+
+            progressBar.Maximum = viewModel.NumGenerations;
+            graph.DataContext = null;
+
+            if (viewModel.NumGenerations > 1)
+            {
+                var progress = new Progress<int>(value => progressBar.Value = value);
+                await Task.Run(() =>
+                {
+                    do
+                    {
+                        var task = Task.Factory.StartNew(() => ga.NewGeneration(crossoverNewDNA: true));
+                        task.Wait();
+                        ((IProgress<int>)progress).Report(ga.Generation);
+                    }
+                    while (ga.Generation < viewModel.NumGenerations);
+                });
+            }            
+
+            FitnessData = ga.FitnessOverTime;
+            PlotGraph();
+        }
+
+        private void PlotGraph()
+        {
             var valueList = new List<KeyValuePair<string, double>>();
             var addedItems = new List<double>();
             for (int i = 0; i < FitnessData.Count; i++)
@@ -111,13 +143,6 @@ namespace BinPackingWPF
             }
 
             graph.DataContext = valueList;
-        }
-
-        private void PerformAlgorithm()
-        {
-            var packages = _packagesGenerator.GeneratePackages(viewModel.NumPackages, viewModel.BinVolume);
-            var ag = new AlgorithmGenerator(packages, viewModel.BinVolume, viewModel.NumGenerations);
-            FitnessData = ag.Generate();
         }
     }
 }

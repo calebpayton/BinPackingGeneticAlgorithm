@@ -57,7 +57,6 @@
     </ApplicationDefinition>
     <Compile Include="Algorithm\DNA.cs" />
     <Compile Include="Algorithm\GeneticAlgorithm.cs" />
-    <Compile Include="Generator\AlgorithmGenerator.cs" />
     <Compile Include="Generator\FleetGenerator.cs" />
     <Compile Include="Generator\PackagesGenerator.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

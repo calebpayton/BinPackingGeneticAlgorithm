@@ -8,11 +8,10 @@ namespace BinPackingWPF.Generator
     {
         double packageVolumeFactor = .25;
 
-        public IList<Package> GeneratePackages(int numPackages, double binVolume)
+        public IList<Package> GeneratePackages(int numPackages, double binVolume, Random random)
         {
             var packages = new List<Package>();
             
-            var random = new Random();
             for (int i = 0; i < numPackages; i++)
             {
                 packages.Add(new Package
