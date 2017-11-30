@@ -13,27 +13,31 @@ namespace BinPackingWPF.Algorithm
         public Fleet Fleet { get; private set; }
         public IList<Package> Packages { get; private set; }
         public double Fitness { get; private set; }
+        public bool Grandparent { get; set; }
+        public bool WisdomOfCrowds { get; private set; }
 
         private double binAcceptance = .99;
+        private double wocAcceptance = .90;
 
         private Random _random;
         private readonly double _binVolume;
         private readonly FleetGenerator _fleetGenerator;
 
-        public DNA(IList<Package> packages, Random random, double binVolume, Fleet fleet = null, bool shouldInitGenes = true)
+        public DNA(IList<Package> packages, Random random, double binVolume, Fleet fleet = null, bool shouldInitGenes = false)
         {
             Fleet = fleet;
             Packages = packages;
+            Grandparent = false;
+            WisdomOfCrowds = false;
             _random = random;
             _fleetGenerator = new FleetGenerator();
             _binVolume = binVolume;
 
             if (shouldInitGenes)
-            {
                 Fleet = GetRandomFleet(Packages);
-            }
 
-            Fitness = CalculateFitness();
+            if (Fleet != null)
+                Fitness = CalculateFitness();
         }
 
         public double CalculateFitness()
@@ -82,9 +86,48 @@ namespace BinPackingWPF.Algorithm
 
             var fleet = _fleetGenerator.Generate(optimalPackages, _binVolume);
 
-            var child = new DNA(Packages, _random, _binVolume, fleet, false);
+            var child = new DNA(Packages, _random, _binVolume, fleet);
 
             return child;
+        }
+
+        public void CrossoverWoC(IList<DNA> grandparents)
+        {
+            List<Bin> optimalBins = null;
+            if (grandparents.First().Fleet.Bins.Where(b => b.Fitness > wocAcceptance).Any())
+                optimalBins = grandparents.First().Fleet.Bins.Where(b => b.Fitness > wocAcceptance).ToList();
+            else
+                optimalBins = new List<Bin> { grandparents.First().Fleet.Bins.First() };
+
+            var optimalPackages = optimalBins.SelectMany(b => b.Packages).ToList();
+            var otherPackages = Packages.Where(p => !optimalPackages.Contains(p)).ToList();
+
+            var fleet = _fleetGenerator.Generate(optimalPackages, _binVolume);
+            
+            while (otherPackages.Sum(p => p.Volume) > _binVolume * 3)
+            {
+                var randomizedPackages = Shuffle(otherPackages);
+                var subFleet = _fleetGenerator.Generate(randomizedPackages, _binVolume);
+                if (subFleet.Bins.Where(b => b.Fitness > binAcceptance).Any())
+                {
+                    fleet.Bins.AddRange(subFleet.Bins.Where(b => b.Fitness > binAcceptance));
+                    var packagesToRemove = subFleet.Bins.Where(b => b.Fitness > binAcceptance).SelectMany(b => b.Packages).ToList();
+                    packagesToRemove.ForEach(p =>
+                    {
+                        otherPackages.Remove(p);
+                    });
+                }
+            }
+
+            if (otherPackages.Any())
+            {
+                var finalSubFleet = _fleetGenerator.Generate(otherPackages, _binVolume);
+                fleet.Bins.AddRange(finalSubFleet.Bins);
+            }
+
+            this.Fleet = fleet;
+            this.Fitness = CalculateFitness();
+            this.WisdomOfCrowds = true;
         }
 
         public void Mutate(float mutationRate)

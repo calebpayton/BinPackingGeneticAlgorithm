@@ -14,7 +14,9 @@ namespace BinPackingWPF.Algorithm
         public IList<double> FitnessOverTime { get; private set; }
         public int Generation { get; private set; }
         public double BestFitness { get; private set; }
+        public double WoCFitness { get; private set; }
         public Fleet BestFleet { get; private set; }
+        public bool FinalGeneration { get; set; }
         public float MutationRate;        
         private Random _random;
         private readonly double _binVolume;
@@ -26,6 +28,7 @@ namespace BinPackingWPF.Algorithm
             Generation = 1;
             MutationRate = mutationRate;
             Population = new List<DNA>(populationSize);
+            FinalGeneration = false;
             _random = random;
             _binVolume = binVolume;
 
@@ -65,9 +68,23 @@ namespace BinPackingWPF.Algorithm
 
             newPopulation.Sort(CompareDNA);
             if (Population.First().Fitness > newPopulation.First().Fitness)
+                Population.First().Grandparent = true;
+            else
+                newPopulation.First().Grandparent = true;
+
+            newPopulation.AddRange(Population.Where(p => p.Grandparent == true));
+            newPopulation.Sort(CompareDNA);
+
+            for (int i = Population.Count - 1; i < newPopulation.Count; i++)
             {
-                newPopulation.RemoveAt(newPopulation.Count - 1);
-                newPopulation.Add(Population.First());
+                newPopulation.RemoveAt(i);
+            }
+
+            if (FinalGeneration == true)
+            {
+                var wocChild = new DNA(Packages, _random, _binVolume);
+                wocChild.CrossoverWoC(Population.Where(p => p.Grandparent == true).ToList());
+                WoCFitness = wocChild.Fitness;
             }
 
             Population = newPopulation;
@@ -84,17 +101,11 @@ namespace BinPackingWPF.Algorithm
         public int CompareDNA(DNA a, DNA b)
         {
             if (a.Fitness > b.Fitness)
-            {
                 return -1;
-            }
             else if (a.Fitness < b.Fitness)
-            {
                 return 1;
-            }
             else
-            {
                 return 0;
-            }
         }
 
         private DNA ChooseParent()

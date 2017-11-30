@@ -113,6 +113,9 @@ namespace BinPackingWPF
                 {
                     do
                     {
+                        if (ga.Generation == viewModel.NumGenerations - 1)
+                            ga.FinalGeneration = true;
+
                         var task = Task.Factory.StartNew(() => ga.NewGeneration(crossoverNewDNA: true));
                         task.Wait();
                         ((IProgress<int>)progress).Report(ga.Generation);
@@ -122,6 +125,7 @@ namespace BinPackingWPF
             }            
 
             FitnessData = ga.FitnessOverTime;
+            FitnessData.Add(ga.WoCFitness);
             PlotGraph();
         }
 
@@ -131,14 +135,18 @@ namespace BinPackingWPF
             var addedItems = new List<double>();
             for (int i = 0; i < FitnessData.Count; i++)
             {
-                if (!addedItems.Contains(FitnessData[i]))
+                if (!addedItems.Contains(FitnessData[i]) && i != FitnessData.Count - 1)
                 {
                     valueList.Add(new KeyValuePair<string, double>((i + 1).ToString(), FitnessData[i] * 100));
                     addedItems.Add(FitnessData[i]);
                 }
-                else if (i == FitnessData.Count - 1)
+                else if (i == FitnessData.Count - 2)
                 {
                     valueList.Add(new KeyValuePair<string, double>((i + 1).ToString(), FitnessData[i] * 100));
+                }
+                else if (i == FitnessData.Count - 1)
+                {
+                    valueList.Add(new KeyValuePair<string, double>("WoC", FitnessData[i] * 100));
                 }
             }
 

@@ -38,17 +38,11 @@ namespace BinPackingWPF.Generator
         public int CompareFitness(Bin a, Bin b)
         {
             if (a.Fitness > b.Fitness)
-            {
                 return -1;
-            }
             else if (a.Fitness < b.Fitness)
-            {
                 return 1;
-            }
             else
-            {
                 return 0;
-            }
         }
     }
 }
